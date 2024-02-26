@@ -28,17 +28,21 @@ Once cloned:
 
 `npm install` — Installs node_modules folder for dependencies
 
-`npx playwright install` — Installs everything needed to run PlayWright
-
 ### Running Mock
+`npm run start` — This starts a local server that compiles your code in real time.
 
-`npm start` — This starts a local server that compiles your code in real time.
+### Setup and run Playwright from root directory
+`cd testing` — Change into the `testing` directory
+
+`npm install` — Installs node_modules folder for dependencies
+
+`npx install playwright` — Installs everything needed to run PlayWright
 
 ### Running tests witih Playwright
 
 `npm run test` — Runs tests
 
-`npm run test:unit`, `npm run test:e2e` - Runs unit and end to end testing respectively
+`npm run test:unit`, `npm run test:e2e` - Runs unit and end to end testing respectsively
 
 `npx playwright show-report` — Shows a code breakdown of test progressions
 
