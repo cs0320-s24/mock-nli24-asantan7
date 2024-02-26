@@ -2,6 +2,7 @@ import { useState } from 'react';
 import '../styles/App.css';
 import { LoginButton } from './LoginButton';
 import REPL from './REPL';
+import React from 'react';
 
 /**
  * This is the highest level component!
