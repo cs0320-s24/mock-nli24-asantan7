@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import "../styles/main.css";
 import { ControlledInput } from "./ControlledInput";
 import { REPLFunction } from "./CommandHandler";
+import { loadFunction } from "./CommandHandler";
 import React from "react";
 
 interface REPLInputProps {
@@ -18,15 +19,25 @@ export function REPLInput(props: REPLInputProps) {
   const [commandString, setCommandString] = useState<string>("");
   const [count, setCount] = useState<number>(0);
 
-  const myMap = new Map<String, REPLFunction>();
+  const functionMap = new Map<String, REPLFunction>();
+  functionMap.set("load_csv", loadFunction)
+
 
   // This function is triggered when the button is clicked.
   function handleSubmit(commandString: string) {
     setCount(count + 1);
-    if (myMap.has(commandString)) {
-      
+    let commandArray = commandString.split(" ");
+    const command = commandArray[0];
+    if (functionMap.has(command)) {
+      const commandFunction = functionMap.get(command);
+      commandArray.shift();
+      const result = commandFunction?.(commandArray);
+      props.setHistory([...props.history, command]);//need to be changed 
+
+    } else {
+
     }
-    props.setHistory([...props.history, commandString]);
+
     setCommandString("");
   }
   /**
