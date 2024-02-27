@@ -8,3 +8,9 @@
 export interface REPLFunction {
   (args: Array<string>): String | String[][];
 }
+
+// const modeFunction: REPLFunction = (
+//   commandArray: Array<string>
+// ): string | string[][] => {
+  
+// };
