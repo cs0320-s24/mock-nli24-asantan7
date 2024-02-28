@@ -15,7 +15,7 @@ const fruitCSV = [
 
 const mockedData = new Map<string, Array<Array<string>>>();
 mockedData.set("fruitCSV", fruitCSV);
-let data: string[][] = [];
+let globalData: string[][] = [];
 let loaded: Boolean = false;
 
 export interface REPLFunction {
@@ -32,6 +32,7 @@ export const loadFunction: REPLFunction = (
 ): string | string[][] => {
   let data = mockedData.get(commandArray[0]);
   if (data!=undefined) {
+    globalData = data;
     loaded = true;
     return "Success!"
   } else {
@@ -43,7 +44,7 @@ export const viewFunction: REPLFunction = (
   commandArray: Array<string>
 ): string | string[][] => {
   if (loaded) {
-    return data;
+    return globalData;
   } else {
     return "Failure: View Without Load"
   }
