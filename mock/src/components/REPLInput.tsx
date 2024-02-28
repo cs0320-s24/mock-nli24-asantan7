@@ -6,8 +6,8 @@ import { REPLFunction, viewFunction, loadFunction } from "./CommandHandler";
 import React from "react";
 
 interface REPLInputProps {
-  history: string[];
-  setHistory: Dispatch<SetStateAction<string[]>>;
+  history: (string | string[][])[];
+  setHistory: Dispatch<SetStateAction<(string | string[][])[]>>;
 }
 // You can use a custom interface or explicit fields or both! An alternative to the current function header might be:
 // REPLInput(history: string[], setHistory: Dispatch<SetStateAction<string[]>>)

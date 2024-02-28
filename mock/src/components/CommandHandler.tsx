@@ -6,7 +6,7 @@
  * *NOT* contain the command-name prefix.
  */
 
-const exampleCSV1 = [
+const fruitCSV = [
   ["Name", "ID", "Calories"],
   ["Apple", "1", "95"],
   ["Banana", "2", "105"],
@@ -14,6 +14,9 @@ const exampleCSV1 = [
 ];
 
 const mockedData = new Map<String, Array<Array<String>>>();
+mockedData.set("fruitCSV", fruitCSV);
+let data: string[][] = [];
+let loaded: Boolean = false;
 
 export interface REPLFunction {
   (args: Array<string>): String | String[][];
@@ -29,19 +32,20 @@ export const loadFunction: REPLFunction = (
 ): string | string[][] => {
   if (mockedData.has(commandArray[0])) {
     let data = mockedData.get(commandArray[0]);
+    let loaded = true;
     return "Success!"
   } else {
+    let loaded = false;
     return "File Not Found!"
   }
 };
 export const viewFunction: REPLFunction = (
   commandArray: Array<string>
 ): string | string[][] => {
-  if (mockedData.has(commandArray[0])) {
-    let data = mockedData.get(commandArray[0]);
-    return "Success!";
+  if (loaded) {
+    return data;
   } else {
-    return "File Not Found!";
+    return "Failure: View Without Load"
   }
 };
 
