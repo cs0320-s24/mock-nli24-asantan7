@@ -1,13 +1,11 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import "../styles/main.css";
 import { ControlledInput } from "./ControlledInput";
-import { REPLFunction } from "./CommandHandler";
-import { loadFunction } from "./CommandHandler";
+import { REPLFunction, viewFunction, loadFunction } from "./CommandHandler";
+
 import React from "react";
 
 interface REPLInputProps {
-  // TODO: Fill this with desired props... Maybe something to keep track of the submitted commands
-  // CHANGED
   history: string[];
   setHistory: Dispatch<SetStateAction<string[]>>;
 }
@@ -20,8 +18,8 @@ export function REPLInput(props: REPLInputProps) {
   const [count, setCount] = useState<number>(0);
 
   const functionMap = new Map<String, REPLFunction>();
-  functionMap.set("load_csv", loadFunction)
-
+  functionMap.set("load_csv", loadFunction);
+  functionMap.set("view", viewFunction);
 
   // This function is triggered when the button is clicked.
   function handleSubmit(commandString: string) {
@@ -32,10 +30,9 @@ export function REPLInput(props: REPLInputProps) {
       const commandFunction = functionMap.get(command);
       commandArray.shift();
       const result = commandFunction?.(commandArray);
-      props.setHistory([...props.history, command]);//need to be changed 
-
+      props.setHistory([...props.history, commandString]);
     } else {
-
+      props.setHistory([...props.history, "Command Not Found!"]);
     }
 
     setCommandString("");
