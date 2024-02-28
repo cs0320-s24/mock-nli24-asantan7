@@ -13,13 +13,13 @@ const fruitCSV = [
   ["Peach", "3", "50"],
 ];
 
-const mockedData = new Map<String, Array<Array<String>>>();
+const mockedData = new Map<string, Array<Array<string>>>();
 mockedData.set("fruitCSV", fruitCSV);
 let data: string[][] = [];
 let loaded: Boolean = false;
 
 export interface REPLFunction {
-  (args: Array<string>): String | String[][];
+  (args: Array<string>): string | string[][];
 }
 // export const modeFunction: REPLFunction = (
 //   commandArray: Array<string>
@@ -30,12 +30,12 @@ export interface REPLFunction {
 export const loadFunction: REPLFunction = (
   commandArray: Array<string>
 ): string | string[][] => {
-  if (mockedData.has(commandArray[0])) {
-    let data = mockedData.get(commandArray[0]);
-    let loaded = true;
+  let data = mockedData.get(commandArray[0]);
+  if (data!=undefined) {
+    loaded = true;
     return "Success!"
   } else {
-    let loaded = false;
+    loaded = false;
     return "File Not Found!"
   }
 };

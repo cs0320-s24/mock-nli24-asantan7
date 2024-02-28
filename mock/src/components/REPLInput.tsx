@@ -6,8 +6,10 @@ import { REPLFunction, viewFunction, loadFunction } from "./CommandHandler";
 import React from "react";
 
 interface REPLInputProps {
-  history: (string | string[][])[];
-  setHistory: Dispatch<SetStateAction<(string | string[][])[]>>;
+  history: string[];
+  setHistory: Dispatch<SetStateAction<string[]>>;
+  output: (string | string[][])[];
+  setOutput: Dispatch<SetStateAction<(string | string[][])[]>>;
 }
 // You can use a custom interface or explicit fields or both! An alternative to the current function header might be:
 // REPLInput(history: string[], setHistory: Dispatch<SetStateAction<string[]>>)
@@ -26,15 +28,15 @@ export function REPLInput(props: REPLInputProps) {
     setCount(count + 1);
     let commandArray = commandString.split(" ");
     const command = commandArray[0];
-    if (functionMap.has(command)) {
-      const commandFunction = functionMap.get(command);
+    const commandFunction = functionMap.get(command);
+    if (commandFunction!=undefined) {
       commandArray.shift();
-      const result = commandFunction?.(commandArray);
-      props.setHistory([...props.history, commandString]);
+      const result = commandFunction(commandArray);
+      props.setHistory([...props.history, command]);
+      props.setOutput([...props.output, result]);
     } else {
       props.setHistory([...props.history, "Command Not Found!"]);
     }
-
     setCommandString("");
   }
   /**
