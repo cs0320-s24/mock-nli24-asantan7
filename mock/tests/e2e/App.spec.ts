@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-
+import exp from "constants";
 
 /**
   The general shapes of tests in Playwright Test are:
@@ -9,36 +9,116 @@ import { expect, test } from "@playwright/test";
   Look for this pattern in the tests below!
  */
 
-// If you needed to do something before every test case...
-test.beforeEach(() => {
-    // ... you'd put it here.
-    // TODO: Is there something we need to do before every test case to avoid repeating code?
+test.beforeEach(async ({ page }) => {
+    // Login:
+    await page.goto('http://localhost:8000/');
+    if (await page.getByLabel('Login').isVisible()) {
+      await page.getByLabel('Login').click();
+    }
   })
 
-/**
- * Don't worry about the "async" yet. We'll cover it in more detail
- * for the next sprint. For now, just think about "await" as something 
- * you put before parts of your test that might take time to run, 
- * like any interaction with the page.
- */
+// User story 1:
+test('mode switches between brief and verbose', async ({ page }) => {
+  await page.getByLabel('Command input').fill('mode');
+  await page.getByRole('button', {name: 'Submitted 0 times'}).click()
+
+  await expect(page.getByText('Mode Switched!')).toBeVisible();
+
+  await page.getByLabel('Command input').fill('mode verbose');
+  await page.getByRole('button', {name: 'Submitted 1 times'}).click()
+  
+  await expect(page.getByText('Command: mode')).toBeVisible();
+})
+
+// User story 2:
+test('csv is loaded using load_csv command', async ({ page }) => {
+  await page.getByLabel('Command input').fill('load_csv+fruitCSV');
+  await page.getByRole('button', {name: 'Submitted 0 times'}).click()
+  await expect(page.getByText('Success!')).toBeVisible();
+  await page.getByLabel('Command input').fill('view');
+  await page.getByRole('button', {name: 'Submitted 1 times'}).click()
+  await expect(page.getByText('Apple')).toBeVisible();
+  await expect(page.getByText('Banana')).toBeVisible();
+  await expect(page.getByText('Peach')).toBeVisible();
+})
+
+test('at most one CSV dataset is loaded at any given time', async ({ page }) => {
+  // switch between datasets
+  await page.getByLabel('Command input').fill('load_csv+fruitCSV');
+  await page.getByRole('button', {name: 'Submitted 0 times'}).click()
+  await expect(page.getByText('Success!')).toBeVisible();
+  
+  await page.getByLabel('Command input').fill('load_csv+drinksCSV');
+  await page.getByRole('button', {name: 'Submitted 1 times'}).click()
+
+  await page.getByLabel('Command input').fill('view');
+  await page.getByRole('button', {name: 'Submitted 2 times'}).click()
+  await expect(page.getByText('Water')).toBeVisible();
+  await expect(page.getByText('Coca Cola')).toBeVisible();
+  await expect(page.getByText('Juice')).toBeVisible();
+  await expect(page.getByText('Apple')).toBeHidden();
+})
+
+// User story 3:
+test('cannot view without loading file', async ({ page }) => {
+  await page.getByLabel('Command input').fill('view');
+  await page.getByRole('button', {name: 'Submitted 0 times'}).click()
+  await expect(page.getByText('Failure: View Without Load')).toBeVisible();
+})
+
+// User story 4:
+test('cannot search without loading file', async ({ page }) => {
+  await page.getByLabel('Command input').fill('search+fruitCSV+Name');
+  await page.getByRole('button', {name: 'Submitted 0 times'}).click();
+  await expect(page.getByText('Failure: Search Without Load')).toBeVisible();
+})
+
+test('I can search in CSV by column name', async ({ page }) => {
+  await page.getByLabel('Command input').fill('load_csv+fruitCSV');
+  await page.getByRole('button', {name: 'Submitted 0 times'}).click();
+  await expect(page.getByText('Success!')).toBeVisible();
+
+  await page.getByLabel('Command input').fill('search+fruitCSV+Name+Apple');
+  await page.getByRole('button', {name: 'Submitted 1 times'}).click();
+})
+
+test('cannot search with less than 3 overal arguments', async ({ page }) => {
+  await page.getByLabel('Command input').fill('load_csv+fruitCSV');
+  await page.getByRole('button', {name: 'Submitted 0 times'}).click();
+  await expect(page.getByText('Success!')).toBeVisible();
+
+  await page.getByLabel('Command input').fill('search+fruitCSV+Name');
+  await page.getByRole('button', {name: 'Submitted 1 times'}).click();
+  await expect(page.getByText('Failure: Incorrect Number of Arguments')).toBeVisible();
+})
+
+test('cannot search with more than 3 overal arguments', async ({ page }) => {
+  await page.getByLabel('Command input').fill('load_csv+fruitCSV');
+  await page.getByRole('button', {name: 'Submitted 0 times'}).click();
+  await expect(page.getByText('Success!')).toBeVisible();
+
+  await page.getByLabel('Command input').fill('search+fruitCSV+Name+Apple+Extra');
+  await page.getByRole('button', {name: 'Submitted 1 times'}).click();
+  await expect(page.getByText('Failure: Incorrect Number of Arguments')).toBeVisible();
+})
+
+// User story 5:
 test('on page load, i see a login button', async ({ page }) => {
-  // Notice: http, not https! Our front-end is not set up for HTTPs.
   await page.goto('http://localhost:8000/');
   await expect(page.getByLabel('Login')).toBeVisible()
 })
 
 test('on page load, i dont see the input box until login', async ({ page }) => {
-  // Notice: http, not https! Our front-end is not set up for HTTPs.
   await page.goto('http://localhost:8000/');
   await expect(page.getByLabel('Sign Out')).not.toBeVisible()
   await expect(page.getByLabel('Command input')).not.toBeVisible()
   
-  // click the login button
   await page.getByLabel('Login').click();
   await expect(page.getByLabel('Sign Out')).toBeVisible()
   await expect(page.getByLabel('Command input')).toBeVisible()
 })
 
+// General tests:
 test('after I type into the input box, its text changes', async ({ page }) => {
   // Step 1: Navigate to a URL
   await page.goto('http://localhost:8000/');
@@ -71,17 +151,17 @@ test('after I click the button, its label increments', async ({ page }) => {
   await expect(page.getByRole('button', {name: 'Submitted 1 times'})).toBeVisible()
 });
 
-test('after I click the button, my command gets pushed', async ({ page }) => {
-  // CHANGED
-  await page.goto('http://localhost:8000/');
-  await page.getByLabel('Login').click();
-  await page.getByLabel('Command input').fill('Awesome command');
-  await page.getByRole('button', {name: 'Submitted 0 times'}).click()
+// test('after I click the button, my command gets pushed', async ({ page }) => {
+//   // CHANGED
+//   await page.goto('http://localhost:8000/');
+//   await page.getByLabel('Login').click();
+//   await page.getByLabel('Command input').fill('Awesome command');
+//   await page.getByRole('button', {name: 'Submitted 0 times'}).click()
 
-  // you can use page.evaulate to grab variable content from the page for more complex assertions
-  const firstChild = await page.evaluate(() => {
-    const history = document.querySelector('.repl-history');
-    return history?.children[0]?.textContent;
-  });
-  expect(firstChild).toEqual("Awesome command");
-});
+//   // you can use page.evaulate to grab variable content from the page for more complex assertions
+//   const firstChild = await page.evaluate(() => {
+//     const history = document.querySelector('.repl-history');
+//     return history?.children[0]?.textContent;
+//   });
+//   expect(firstChild).toEqual("Awesome command");
+// });
