@@ -118,6 +118,46 @@ test('on page load, i dont see the input box until login', async ({ page }) => {
   await expect(page.getByLabel('Command input')).toBeVisible()
 })
 
+// Complex interactions:
+test('complex interaction with load, view, mode switch, and history', async ({ page }) => {
+  await page.getByLabel('Command input').fill('load_csv+fruitCSV');
+  await page.getByRole('button', {name: 'Submitted 0 times'}).click();
+  await expect(page.getByText('Success!')).toBeVisible();
+
+  await page.getByLabel('Command input').fill('view');
+  await page.getByRole('button', {name: 'Submitted 1 times'}).click();
+  await expect(page.getByText('Apple')).toBeVisible();
+  await expect(page.getByText('Banana')).toBeVisible();
+  await expect(page.getByText('Peach')).toBeVisible();
+
+  await page.getByLabel('Command input').fill('load_csv+drinksCSV');
+  await page.getByRole('button', {name: 'Submitted 2 times'}).click();
+
+  await page.getByLabel('Command input').fill('mode');
+  await page.getByRole('button', {name: 'Submitted 3 times'}).click();
+  await expect(page.getByText('Mode Switched!')).toBeVisible();
+
+  await page.getByLabel('Command input').fill('view');
+  await page.getByRole('button', {name: 'Submitted 4 times'}).click();
+  await expect(page.getByText('Command: view')).toBeVisible();
+  await expect(page.getByText('Water')).toBeVisible();
+  await expect(page.getByText('Coca Cola')).toBeVisible();
+  await expect(page.getByText('Juice')).toBeVisible();
+
+  // Check order:
+  const historyContent = await page.evaluate(() => {
+    const history = document.querySelector('.repl-history');
+    return history?.children[0]?.textContent;;
+  });
+  expect(historyContent).toEqual('Success!');
+  
+  const historyContent2 = await page.evaluate(() => {
+    const history = document.querySelector('.repl-history');
+    return history?.children[1]?.textContent;;
+  });
+  expect(historyContent2).toEqual('NameIDCaloriesApple195Banana2105Peach350');
+});
+
 // General tests:
 test('after I type into the input box, its text changes', async ({ page }) => {
   // Step 1: Navigate to a URL
@@ -130,22 +170,17 @@ test('after I type into the input box, its text changes', async ({ page }) => {
   await page.getByLabel('Command input').fill('Awesome command');
 
   // Step 3: Assert something about the page
-  // Assertions are done by using the expect() function
   const mock_input = `Awesome command`
   await expect(page.getByLabel('Command input')).toHaveValue(mock_input)
 });
 
 test('on page load, i see a button', async ({ page }) => {
-  // CHANGED
   await page.goto('http://localhost:8000/');
   await page.getByLabel('Login').click();
   await expect(page.getByRole('button', {name: 'Submitted 0 times'})).toBeVisible()
 });
 
 test('after I click the button, its label increments', async ({ page }) => {
-  // CHANGED
-  await page.goto('http://localhost:8000/');
-  await page.getByLabel('Login').click();
   await expect(page.getByRole('button', {name: 'Submitted 0 times'})).toBeVisible()
   await page.getByRole('button', {name: 'Submitted 0 times'}).click()
   await expect(page.getByRole('button', {name: 'Submitted 1 times'})).toBeVisible()
