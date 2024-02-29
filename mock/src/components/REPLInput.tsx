@@ -1,41 +1,45 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import "../styles/main.css";
 import { ControlledInput } from "./ControlledInput";
-import { REPLFunction, viewFunction, loadFunction } from "./CommandHandler";
+import { REPLFunction, viewFunction, loadFunction, modeFunction, searchFunction } from "./CommandHandler";
 
 import React from "react";
 
 interface REPLInputProps {
-  history: string[];
-  setHistory: Dispatch<SetStateAction<string[]>>;
-  output: (string | string[][])[];
-  setOutput: Dispatch<SetStateAction<(string | string[][])[]>>;
+  history: JSX.Element[];
+  setHistory: Dispatch<SetStateAction<JSX.Element[]>>;
+  mode: boolean;
+  setMode: Dispatch<SetStateAction<boolean>>;
 }
 // You can use a custom interface or explicit fields or both! An alternative to the current function header might be:
 // REPLInput(history: string[], setHistory: Dispatch<SetStateAction<string[]>>)
 export function REPLInput(props: REPLInputProps) {
-  // Remember: let React manage state in your webapp.
-  // Manages the contents of the input box
   const [commandString, setCommandString] = useState<string>("");
   const [count, setCount] = useState<number>(0);
 
   const functionMap = new Map<String, REPLFunction>();
+  functionMap.set("mode", modeFunction);
   functionMap.set("load_csv", loadFunction);
   functionMap.set("view", viewFunction);
+  functionMap.set("search", searchFunction);
 
   // This function is triggered when the button is clicked.
   function handleSubmit(commandString: string) {
     setCount(count + 1);
-    let commandArray = commandString.split(" ");
-    const command = commandArray[0];
+    let commandArray = commandString.split("+");
+    let command = commandArray[0];
     const commandFunction = functionMap.get(command);
     if (commandFunction!=undefined) {
       commandArray.shift();
       const result = commandFunction(commandArray);
-      props.setHistory([...props.history, command]);
-      props.setOutput([...props.output, result]);
+      if (result[0][0] === "Mode Switched!") {
+        props.setMode(!props.mode);
+      }
+      const element = convertArraytoTable(result,command,props.mode);
+      props.setHistory([...props.history, element]);
     } else {
-      props.setHistory([...props.history, "Command Not Found!"]);
+      const element = convertArraytoTable([["Command Not Found"]], command, props.mode);
+      props.setHistory([...props.history, element]);
     }
     setCommandString("");
   }
@@ -63,4 +67,41 @@ export function REPLInput(props: REPLInputProps) {
       </button>
     </div>
   );
+}
+
+function convertArraytoTable(data: Array<Array<string>>, commandName: string, mode: boolean) {
+  if (mode) {
+    return (
+      <div>
+        <p>Command: {commandName} </p>
+        <table>
+          <caption> Output: </caption>
+          <tbody>
+            {data.map((row, rowIndex) => (
+              <tr key={`row_${rowIndex}`}>
+                {row.map((cell, cellIndex) => (
+                  <td key={`cell_${rowIndex}_${cellIndex}`}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  } else {
+    return (
+      <table>
+        <tbody>
+          {data.map((row, rowIndex) => (
+            <tr key={`row_${rowIndex}`}>
+              {row.map((cell, cellIndex) => (
+                <td key={`cell_${rowIndex}_${cellIndex}`}>{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+   
+  };
 }

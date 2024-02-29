@@ -16,8 +16,7 @@ import React from "react";
 export default function REPL() {
   // TODO: Add some kind of shared state that holds all the commands submitted.
   // CHANGED
-  const [history, setHistory] = useState<string[]>([]);
-  const [output, setOutput] = useState<(string | string[][])[]>([]);
+  const [history, setHistory] = useState<JSX.Element[]>([]);
   const [mode, setMode] = useState<boolean>(false);
 
 
@@ -25,10 +24,10 @@ export default function REPL() {
     <div className="repl">
       {/*This is where your REPLHistory might go... You also may choose to add it within your REPLInput 
       component or somewhere else depending on your component organization. What are the pros and cons of each? */}
-      <REPLHistory history={history} mode={mode} output={output}/>
+      <REPLHistory history={history} mode={mode} />
       <hr></hr>
       {/* CHANGED */}
-      <REPLInput history={history} setHistory={setHistory} output={output} setOutput={setOutput}/>  
+      <REPLInput history={history} setHistory={setHistory} mode={mode} setMode={setMode}/>  
     </div>
   );
 }

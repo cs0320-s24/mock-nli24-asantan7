@@ -19,34 +19,77 @@ let globalData: string[][] = [];
 let loaded: Boolean = false;
 
 export interface REPLFunction {
-  (args: Array<string>): string | string[][];
+  (args: Array<string>): string[][];
 }
-// export const modeFunction: REPLFunction = (
-//   commandArray: Array<string>
-// ): string | string[][] => {
-//   return "jim";
-// };
+export const modeFunction: REPLFunction = (
+  commandArray: Array<string>
+): string[][] => {
+  return [["Mode Switched!"]];
+};
 
 export const loadFunction: REPLFunction = (
   commandArray: Array<string>
-): string | string[][] => {
+): string[][] => {
   let data = mockedData.get(commandArray[0]);
-  if (data!=undefined) {
+  if (data != undefined) {
     globalData = data;
     loaded = true;
-    return "Success!"
+    return [["Success!"]];
   } else {
     loaded = false;
-    return "File Not Found!"
+    return [["File Not Found!"]];
   }
 };
 export const viewFunction: REPLFunction = (
   commandArray: Array<string>
-): string | string[][] => {
+): string[][] => {
   if (loaded) {
     return globalData;
   } else {
-    return "Failure: View Without Load"
+    return [["Failure: View Without Load"]];
   }
 };
 
+export const searchFunction: REPLFunction = (
+  //have to search w/column index or name
+  commandArray: Array<string>
+): string[][] => {
+  let headers = commandArray[2];
+  let value = commandArray[1];
+  const results: string[][] = [];
+  let headerIndex = 0;
+
+  if (loaded) {
+    if (commandArray.length === 3) {
+      if (isNaN(parseInt(commandArray[0]))) { //column Name
+        for (let i = 0; i < globalData[i].length; i++) {
+          if (globalData[0][i] === commandArray[0]) {
+            headerIndex = i;
+          }
+        }
+      } else {
+        headerIndex = parseInt(commandArray[0]);
+      }
+      if (headers === "Y") {
+        for (let i = 1; i < globalData.length; i++) {
+          if (globalData[i][headerIndex] === value) {
+            results.push(globalData[0]);
+            results.push(globalData[i]);
+          }
+        }
+      }
+      if (headers === "N") {
+        for (let i = 0; i < globalData.length; i++) {
+          if (globalData[i][parseInt(commandArray[0])] === value) {
+            results.push(globalData[i]);
+          }
+        }
+      }
+      return results;
+    } else {
+      return [["Failure: Incorrect Number of Arguments"]];
+    }
+  } else {
+    return [["Failure: Search Without Load"]];
+  }
+};
