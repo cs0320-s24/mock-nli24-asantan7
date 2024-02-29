@@ -13,8 +13,17 @@ const fruitCSV = [
   ["Peach", "3", "50"],
 ];
 
+const drinksCSV = [
+  ["Name", "ID", "Calories"],
+  ["Water", "1", "95"],
+  ["Coca Cola", "2", "105"],
+  ["Juice", "3", "50"],
+];
+
 const mockedData = new Map<string, Array<Array<string>>>();
 mockedData.set("fruitCSV", fruitCSV);
+mockedData.set("drinksCSV", drinksCSV);
+
 let globalData: string[][] = [];
 let loaded: Boolean = false;
 
