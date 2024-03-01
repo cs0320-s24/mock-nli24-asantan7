@@ -95,7 +95,7 @@ export function REPLInput(props: REPLInputProps) {
  * @param mode: boolean representing the current mode 
  * @returns an HTML table containing the output and command, if verbose mode. 
  */
-function convertArraytoTable(
+export function convertArraytoTable(
   data: Array<Array<string>>,
   commandName: string,
   mode: boolean
