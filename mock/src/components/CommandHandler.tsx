@@ -20,9 +20,15 @@ const drinksCSV = [
   ["Juice", "3", "50"],
 ];
 
+const noHeaderCSV = [
+  ["Vladnira", "20", "8"],
+  ["Ethan", "20", "8"],
+  ["Minnie", "21", "9"],
+];
 const mockedData = new Map<string, Array<Array<string>>>();
 mockedData.set("fruitCSV", fruitCSV);
 mockedData.set("drinksCSV", drinksCSV);
+mockedData.set("noHeaderCSV", noHeaderCSV);
 
 let globalData: string[][] = [];
 let loaded: Boolean = false;
@@ -93,6 +99,9 @@ export const searchFunction: REPLFunction = (
             results.push(globalData[i]);
           }
         }
+      }
+      if (results.length === 0) {
+        return [["No results found!"]]
       }
       return results;
     } else {
