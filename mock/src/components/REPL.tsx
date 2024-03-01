@@ -5,28 +5,28 @@ import { REPLInput } from "./REPLInput";
 import React from "react";
 
 /* 
-  You'll want to expand this component (and others) for the sprints! Remember 
-  that you can pass "props" as function arguments. If you need to handle state 
-  at a higher level, just move up the hooks and pass the state/setter as a prop.
-  
-  This is a great top level component for the REPL. It's a good idea to have organize all components in a component folder.
-  You don't need to do that for this gearup.
+* Function that handles the REPL graphical interface in general, including constants for setting the mode 
+* and history, then passing that to REPLHistory and REPLInput. 
+* @returns the REPLHistory and REPLInput objects that have been both graphically placed. 
 */
 
 export default function REPL() {
-  // TODO: Add some kind of shared state that holds all the commands submitted.
-  // CHANGED
+
+  /**
+   * Constant to represent the history of all commands+outputs, which are contained in a JSX Element.
+   */
   const [history, setHistory] = useState<JSX.Element[]>([]);
+
+  /**
+   * Constant that represents and sets the mode to false. 
+   */
   const [mode, setMode] = useState<boolean>(false);
 
 
   return (
     <div className="repl">
-      {/*This is where your REPLHistory might go... You also may choose to add it within your REPLInput 
-      component or somewhere else depending on your component organization. What are the pros and cons of each? */}
-      <REPLHistory history={history} mode={mode} />
+      <REPLHistory history={history}/>
       <hr></hr>
-      {/* CHANGED */}
       <REPLInput history={history} setHistory={setHistory} mode={mode} setMode={setMode}/>  
     </div>
   );
