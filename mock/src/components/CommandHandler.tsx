@@ -1,28 +1,12 @@
 /**
  * This class contains the various REPL functions and the logic for those functions. It then returns a 2DArray containing
  * the resulting output. 
- * The mocked data is also created in this class, then passed to the various functions that need to access data. 
+ * The mocked data is also imported in this class, then passed to the various functions that need to access data. 
  */
 
-const fruitCSV = [
-  ["Name", "ID", "Calories"],
-  ["Apple", "1", "95"],
-  ["Banana", "2", "105"],
-  ["Peach", "3", "50"],
-];
+import { drinksCSV, fruitCSV, noHeaderCSV } from "../mockedJson";
 
-const drinksCSV = [
-  ["Name", "ID", "Calories"],
-  ["Water", "1", "95"],
-  ["Coca Cola", "2", "105"],
-  ["Juice", "3", "50"],
-];
 
-const noHeaderCSV = [
-  ["Vladnira", "20", "8"],
-  ["Ethan", "20", "8"],
-  ["Minnie", "21", "9"],
-];
 const mockedData = new Map<string, Array<Array<string>>>();
 mockedData.set("fruitCSV", fruitCSV);
 mockedData.set("drinksCSV", drinksCSV);
